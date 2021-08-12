@@ -24,22 +24,28 @@ public class TableService{
 
     // Will create a list with all tables and then remove the tables that does not match with the number of people
     // in the booking or the booking time. This method assumes that a restaurant visit takes 2 hours.
-    public List<Table> getAvailableTables(LocalDateTime requestedTime, double numOfPeople) {
+    public List<Table> getAvailableTables(LocalDateTime requestedTime, int numOfPeople) {
         List<Table> allTables = getTables();
         List<Table> freeTables = getTables();
         freeTables.clear();
 
         for (Table table: allTables) {
             boolean free = false;
-            for (LocalDateTime time: table.getBookings()) {
-                if (requestedTime.isBefore(time) && requestedTime.plusHours(1).isBefore(time)) {
-                    free = true;
-                    continue;
-                }
-                if (requestedTime.isAfter(time) && requestedTime.isAfter(time.plusHours(1))) {
-                    free = true;
+            if (table.getBookings().isEmpty()) {
+                free = true;
+
+            } else {
+                for (LocalDateTime time: table.getBookings()) {
+                    if (requestedTime.isBefore(time) && requestedTime.plusHours(1).isBefore(time)) {
+                        free = true;
+                        continue;
+                    }
+                    if (requestedTime.isAfter(time) && requestedTime.isAfter(time.plusHours(1))) {
+                        free = true;
+                    }
                 }
             }
+
             if (free) {
                 freeTables.add(table);
             }
@@ -74,6 +80,12 @@ public class TableService{
         getTables().forEach(table -> tableSizes.add(table.getAvailableSeats()));
 
         return tableSizes;
+    }
+
+    public void save(Table table) {
+        if (table != null) {
+            tableRepository.save(table);
+        }
     }
 
     @PostConstruct

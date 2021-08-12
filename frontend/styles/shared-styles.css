@@ -3,11 +3,11 @@
     font-size: 1em;
 }
 
-/* Active requests */
-.active-requests .booking-grid {
-    flex: 3;
+/* Pending requests */
+.pending-requests .booking-grid {
+    flex: 5;
 }
 
-.active-requests .accept-deny-buttons {
+.pending-requests .accept-deny-buttons {
     flex: 1;
 }
