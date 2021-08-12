@@ -64,9 +64,7 @@ public class NewBookingForm extends FormLayout {
         send.addClickListener(event -> validateAndSave());
 
     }
-
-
-    // FIXME: 2021-08-12 The table validation is not working anymore
+    
     private void configureTables(TableService tableService) {
         table.setItems(List.of());
 
@@ -121,14 +119,20 @@ public class NewBookingForm extends FormLayout {
     // Events
     public static abstract class NewBookingFormEvent extends ComponentEvent<NewBookingForm> {
         private BookingRequest bookingRequest;
+        private Table table;
 
         protected NewBookingFormEvent(NewBookingForm source, BookingRequest bookingRequest) {
             super(source, false);
             this.bookingRequest = bookingRequest;
+            this.table = bookingRequest.getTable();
         }
 
-        public BookingRequest getContact() {
+        public BookingRequest getBookingRequest() {
             return bookingRequest;
+        }
+
+        public Table getTable() {
+            return this.table;
         }
     }
 
