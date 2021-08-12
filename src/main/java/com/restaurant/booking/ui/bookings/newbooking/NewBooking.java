@@ -3,7 +3,6 @@ package com.restaurant.booking.ui.bookings.newbooking;
 import com.restaurant.booking.backend.service.BookingRequestService;
 import com.restaurant.booking.backend.service.TableService;
 import com.restaurant.booking.ui.MainLayout;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +24,12 @@ public class NewBooking extends VerticalLayout {
         this.form = new NewBookingForm(tableService);
         form.addListener(NewBookingForm.SaveEvent.class, this::saveBooking);
 
-
-
         add(form);
     }
 
     private void saveBooking(NewBookingForm.SaveEvent event) {
-        bookingRequestService.save(event.getContact());
+        bookingRequestService.save(event.getBookingRequest());
+        tableService.save(event.getTable());
         form.clearAllFields();
     }
 }
