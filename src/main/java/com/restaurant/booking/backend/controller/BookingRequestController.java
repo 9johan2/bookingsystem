@@ -21,8 +21,8 @@ public class BookingRequestController {
     }
 
     @GetMapping
-    public List<BookingRequest> getAllRequests() {
-        return service.getAllRequests();
+    public List<BookingRequest> getActiveRequests() {
+        return service.getActiveRequests();
     }
 
 }
