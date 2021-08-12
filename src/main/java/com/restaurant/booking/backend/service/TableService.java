@@ -25,52 +25,28 @@ public class TableService{
     // Will create a list with all tables and then remove the tables that does not match with the number of people
     // in the booking or the booking time. This method assumes that a restaurant visit takes 2 hours.
     public List<Table> getAvailableTables(LocalDateTime requestedTime, int numOfPeople) {
-        List<Table> allTables = getTables();
-        List<Table> freeTables = getTables();
-        freeTables.clear();
+        List<Table> tables = getTables();
 
-        for (Table table: allTables) {
-            boolean free = false;
-            if (table.getBookings().isEmpty()) {
-                free = true;
-
-            } else {
+        tables.removeIf(new Predicate<Table>() {
+            @Override
+            public boolean test(Table table) {
                 for (LocalDateTime time: table.getBookings()) {
-                    if (requestedTime.isBefore(time) && requestedTime.plusHours(1).isBefore(time)) {
-                        free = true;
-                        continue;
+                    if (requestedTime.equals(time)) {
+                        return true;
                     }
-                    if (requestedTime.isAfter(time) && requestedTime.isAfter(time.plusHours(1))) {
-                        free = true;
+                    if (requestedTime.isBefore(time) && (requestedTime.plusHours(1).isAfter(time) || requestedTime.plusHours(1).equals(time))) {
+                        return true;
+                    }
+                    if (requestedTime.isAfter(time) && (!requestedTime.isAfter(time.plusHours(1)) || requestedTime.equals(time.plusHours(1)) )) {
+                        return true;
                     }
                 }
+                return false;
             }
+        });
+        tables.removeIf(table -> table.getAvailableSeats() < numOfPeople);
 
-            if (free) {
-                freeTables.add(table);
-            }
-        }
-
-        freeTables.removeIf(table -> table.getAvailableSeats() < numOfPeople);
-
-        return freeTables;
-
-//        allTables.removeIf(new Predicate<Table>() {
-//            @Override
-//            public boolean test(Table table) {
-//                for (LocalDateTime time: table.getBookings()) {
-//                    if (requestedTime.isBefore(time) && requestedTime.plusHours(1).isBefore(time)) {
-//                        return true;
-//                    }
-//                    if (!requestedTime.isAfter(time) && !requestedTime.isAfter(time.plusHours(1))) {
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//        return allTables;
-
+        return tables;
     }
 
     // Method used for getting all possible tableSizes from the database
