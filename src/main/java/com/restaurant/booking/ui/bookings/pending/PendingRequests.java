@@ -25,7 +25,7 @@ public class PendingRequests extends HorizontalLayout {
     public PendingRequests(BookingRequestService bookingRequestService) {
         this.bookingRequestService = bookingRequestService;
 
-        addClassName("active-requests");
+        addClassName("pending-requests");
         setSizeFull();
 
         configureGrid();
