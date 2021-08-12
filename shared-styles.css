@@ -1,0 +1,13 @@
+/* Main layout */
+.header h1.logo {
+    font-size: 1em;
+}
+
+/* Pending requests */
+.pending-requests .booking-grid {
+    flex: 5;
+}
+
+.pending-requests .accept-deny-buttons {
+    flex: 1;
+}
