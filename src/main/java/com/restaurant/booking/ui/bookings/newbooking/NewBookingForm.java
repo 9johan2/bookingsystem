@@ -1,8 +1,8 @@
 package com.restaurant.booking.ui.bookings.newbooking;
 
+import com.restaurant.booking.backend.controller.TableController;
 import com.restaurant.booking.backend.model.BookingRequest;
 import com.restaurant.booking.backend.model.Table;
-import com.restaurant.booking.backend.service.TableService;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -37,11 +37,11 @@ public class NewBookingForm extends FormLayout {
     H2 textarea = new H2();
 
 
-    public NewBookingForm(TableService tableService) {
+    public NewBookingForm(TableController tableController) {
         addClassName("booking-form");
 
         numOfPeople.setHasControls(true);
-        configureTables(tableService);
+        configureTables(tableController);
         configureButtons();
 
         add(firstName,
@@ -64,18 +64,18 @@ public class NewBookingForm extends FormLayout {
         send.addClickListener(event -> validateAndSave());
 
     }
-    
-    private void configureTables(TableService tableService) {
+
+    private void configureTables(TableController tableController) {
         table.setItems(List.of());
 
         bookingTime.addValueChangeListener(listener -> {
             if (bookingTime.getValue() != null && numOfPeople.getValue() != null) {
-                table.setItems(tableService.getAvailableTables(bookingTime.getValue(), numOfPeople.getValue()));
+                table.setItems(tableController.getTables(bookingTime.getValue(), numOfPeople.getValue()));
             }
         });
         numOfPeople.addValueChangeListener(listener -> {
             if (bookingTime.getValue() != null && numOfPeople.getValue() != null) {
-                table.setItems(tableService.getAvailableTables(bookingTime.getValue(), numOfPeople.getValue()));
+                table.setItems(tableController.getTables(bookingTime.getValue(), numOfPeople.getValue()));
             }
         });
     }
