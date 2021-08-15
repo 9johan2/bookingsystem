@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @Service
@@ -27,35 +25,23 @@ public class TableService{
     public List<Table> getAvailableTables(LocalDateTime requestedTime, int numOfPeople) {
         List<Table> tables = getTables();
 
-        tables.removeIf(new Predicate<Table>() {
-            @Override
-            public boolean test(Table table) {
-                for (LocalDateTime time: table.getBookings()) {
-                    if (requestedTime.equals(time)) {
-                        return true;
-                    }
-                    if (requestedTime.isBefore(time) && (requestedTime.plusHours(1).isAfter(time) || requestedTime.plusHours(1).equals(time))) {
-                        return true;
-                    }
-                    if (requestedTime.isAfter(time) && (!requestedTime.isAfter(time.plusHours(1)) || requestedTime.equals(time.plusHours(1)) )) {
-                        return true;
-                    }
+        tables.removeIf(table -> {
+            for (LocalDateTime time: table.getBookings()) {
+                if (requestedTime.equals(time)) {
+                    return true;
                 }
-                return false;
+                if (requestedTime.isBefore(time) && (requestedTime.plusHours(1).isAfter(time) || requestedTime.plusHours(1).equals(time))) {
+                    return true;
+                }
+                if (requestedTime.isAfter(time) && (!requestedTime.isAfter(time.plusHours(1)) || requestedTime.equals(time.plusHours(1)) )) {
+                    return true;
+                }
             }
+            return false;
         });
         tables.removeIf(table -> table.getAvailableSeats() < numOfPeople);
 
         return tables;
-    }
-
-    // Method used for getting all possible tableSizes from the database
-    public Set<Integer> getTableSizes() {
-        Set<Integer> tableSizes = new HashSet<>();
-
-        getTables().forEach(table -> tableSizes.add(table.getAvailableSeats()));
-
-        return tableSizes;
     }
 
     public void save(Table table) {
