@@ -19,19 +19,19 @@ public class BookingRequestService {
     private final BookingRequestRepository repository;
     private final MongoTemplate mongoTemplate;
 
-    public List<BookingRequest> getAllRequests() {
+    public List<BookingRequest> getBookings(BookingRequest.Status status) {
+        if (status == BookingRequest.Status.PENDING) {
+            return repository.getRequestsByStatus(BookingRequest.Status.PENDING);
+        } else {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("bookingTime").gt(LocalDateTime.now()));
+            query.addCriteria(Criteria.where("status").ne(BookingRequest.Status.PENDING));
+            return mongoTemplate.find(query, BookingRequest.class);
+        }
+    }
+
+    public List<BookingRequest> getAllBookings() {
         return repository.findAll();
-    }
-
-    public List<BookingRequest> getPendingRequests() {
-        return repository.getRequestsByStatus(BookingRequest.Status.PENDING);
-    }
-
-    public List<BookingRequest> getActiveRequests() {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("bookingTime").gt(LocalDateTime.now()));
-        query.addCriteria(Criteria.where("status").ne(BookingRequest.Status.PENDING));
-        return mongoTemplate.find(query, BookingRequest.class);
     }
 
     public Optional<BookingRequest> getByID(String id) {
