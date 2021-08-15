@@ -1,7 +1,7 @@
 package com.restaurant.booking.ui.bookings.pending;
 
+import com.restaurant.booking.backend.controller.BookingRequestController;
 import com.restaurant.booking.backend.model.BookingRequest;
-import com.restaurant.booking.backend.service.BookingRequestService;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -18,12 +18,12 @@ public class PendingRequests extends HorizontalLayout {
     private Button acceptButton = new Button("Accept");
     private Button denyButton = new Button("Deny");
 
-    private final BookingRequestService bookingRequestService;
+    private final BookingRequestController bookingRequestController;
     private BookingRequest bookingRequest;
 
     @Autowired
-    public PendingRequests(BookingRequestService bookingRequestService) {
-        this.bookingRequestService = bookingRequestService;
+    public PendingRequests(BookingRequestController bookingRequestController) {
+        this.bookingRequestController = bookingRequestController;
 
         addClassName("pending-requests");
         setSizeFull();
@@ -57,7 +57,7 @@ public class PendingRequests extends HorizontalLayout {
         acceptButton.setEnabled(false);
         acceptButton.addClickListener(e -> {
             bookingRequest.setStatus(BookingRequest.Status.APPROVED);
-            bookingRequestService.save(bookingRequest);
+            bookingRequestController.update(bookingRequest);
             updateList();
         });
 
@@ -65,13 +65,13 @@ public class PendingRequests extends HorizontalLayout {
         denyButton.setEnabled(false);
         denyButton.addClickListener(e -> {
             bookingRequest.setStatus(BookingRequest.Status.DENIED);
-            bookingRequestService.save(bookingRequest);
+            bookingRequestController.update(bookingRequest);
             updateList();
         });
     }
 
     private void updateList() {
-        grid.setItems(bookingRequestService.getPendingRequests());
+        grid.setItems(bookingRequestController.getBooking(BookingRequest.Status.PENDING));
     }
 
     private void setBookingRequest(BookingRequest bookingRequest) {

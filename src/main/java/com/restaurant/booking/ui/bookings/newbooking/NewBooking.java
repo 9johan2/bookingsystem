@@ -1,7 +1,7 @@
 package com.restaurant.booking.ui.bookings.newbooking;
 
-import com.restaurant.booking.backend.service.BookingRequestService;
-import com.restaurant.booking.backend.service.TableService;
+import com.restaurant.booking.backend.controller.BookingRequestController;
+import com.restaurant.booking.backend.controller.TableController;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -11,25 +11,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class NewBooking extends VerticalLayout {
 
 
-    private final TableService tableService;
-    private final BookingRequestService bookingRequestService;
+    private final TableController tableController;
+    private final BookingRequestController bookingRequestController;
     private NewBookingForm form;
 
     @Autowired
-    public NewBooking(TableService tableService,
-                        BookingRequestService bookingRequestService) {
-        this.tableService = tableService;
-        this.bookingRequestService = bookingRequestService;
+    public NewBooking(TableController tableController,
+                        BookingRequestController bookingRequestController) {
+        this.tableController = tableController;
+        this.bookingRequestController = bookingRequestController;
 
-        this.form = new NewBookingForm(tableService);
+        this.form = new NewBookingForm(tableController);
         form.addListener(NewBookingForm.SaveEvent.class, this::saveBooking);
 
         add(form);
     }
 
     private void saveBooking(NewBookingForm.SaveEvent event) {
-        bookingRequestService.save(event.getBookingRequest());
-        tableService.save(event.getTable());
+        bookingRequestController.save(event.getBookingRequest());
+        tableController.save(event.getTable());
         form.clearAllFields();
     }
 }
