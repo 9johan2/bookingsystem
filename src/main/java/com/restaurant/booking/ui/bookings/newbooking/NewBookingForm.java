@@ -55,7 +55,6 @@ public class NewBookingForm extends VerticalLayout {
         fields.setResponsiveSteps(new FormLayout.ResponsiveStep("1em", 1),
                 new FormLayout.ResponsiveStep("15em", 2));
 
-        bookingRequest = new BookingRequest();
 
         // Size layout and value change mode
         firstName.setMaxWidth("35%");
@@ -85,47 +84,51 @@ public class NewBookingForm extends VerticalLayout {
 
         table.setMaxWidth("35%");
         table.setMinWidth("250px");
+        table.setReadOnly(true);
+
 
         fields.add(firstName, lastName, email, numOfPeople, bookingTime, table);
 
         //Validation
+            // First name
         firstName.setRequiredIndicatorVisible(true);
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
                         "Please enter your first name", 1, null))
                 .bind(BookingRequest::getFirstName, BookingRequest::setFirstName);
 
-        lastName.setRequiredIndicatorVisible(true);
+            // Last name
         binder.forField(lastName)
                 .withValidator(new StringLengthValidator(
                         "Please enter your family name", 1, null))
                 .bind(BookingRequest::getLastName, BookingRequest::setLastName);
 
-        email.setRequiredIndicatorVisible(true);
+
+            // Email
         binder.forField(email)
                 .withValidator(new StringLengthValidator(
                         "Please enter your email", 1, null))
                 .withValidator(new EmailValidator("Incorrect email adress"))
                 .bind(BookingRequest::getEmail, BookingRequest::setEmail);
 
-        numOfPeople.setRequiredIndicatorVisible(true);
+
+            // Number of people
         binder.forField(numOfPeople)
                 .withValidator(new IntegerRangeValidator("There must be at least one person included in your booking"
                         , 1, null))
                 .bind(BookingRequest::getNumOfPeople, BookingRequest::setNumOfPeople);
 
-        bookingTime.setRequiredIndicatorVisible(true);
+            //Booking time
         binder.forField(bookingTime)
                 .withValidator(new DateTimeRangeValidator(
                         "Please chose the desired date for your visit"
                         , LocalDateTime.now(), LocalDateTime.now().plusYears(1)))
                 .bind(BookingRequest::getBookingTime, BookingRequest::setBookingTime);
 
-        SerializablePredicate<Table> tableSelected = value -> table.getValue() != null;
-        table.setRequiredIndicatorVisible(true);
+            //Table
+        SerializablePredicate<Table> tableSelected = value -> table.getValue() != null ;
         binder.forField(table)
-                .withNullRepresentation(null)
-                .withValidator(tableSelected, "Please choose a table. If no tables are visible there are no free tables matching your desired date and group size")
+                .withValidator(tableSelected, "No tables available for your desired time and group size")
                 .bind(BookingRequest::getTable, BookingRequest::setTable);
 
         return fields;
@@ -148,19 +151,29 @@ public class NewBookingForm extends VerticalLayout {
 
         bookingTime.addValueChangeListener(listener -> {
             if (bookingTime.getValue() != null && numOfPeople.getValue() != null) {
-                table.setItems(tableController.getTables(bookingTime.getValue(), numOfPeople.getValue()));
+                List<Table> tables = tableController.getTables(bookingTime.getValue(), numOfPeople.getValue());
+                table.setItems(tables);
+                if (!tables.isEmpty()) {
+                    table.setValue(tables.get(0));
+                }
             }
         });
         numOfPeople.addValueChangeListener(listener -> {
             if (bookingTime.getValue() != null && numOfPeople.getValue() != null) {
-                table.setItems(tableController.getTables(bookingTime.getValue(), numOfPeople.getValue()));
+                List<Table> tables = tableController.getTables(bookingTime.getValue(), numOfPeople.getValue());
+                table.setItems(tables);
+                if (!tables.isEmpty()) {
+                    table.setValue(tables.get(0));
+                }
             }
         });
     }
 
     private void validateAndSave() {
         try {
+            bookingRequest = new BookingRequest();
             binder.writeBeanIfValid(bookingRequest);
+            bookingRequest.getTable().getBookings().add(bookingRequest.getBookingTime());
             fireEvent(new SaveEvent(this, bookingRequest));
             clearAllFields();
 
@@ -169,7 +182,7 @@ public class NewBookingForm extends VerticalLayout {
         }
     }
 
-    void clearAllFields() {
+    private void clearAllFields() {
         firstName.clear();
         lastName.clear();
         email.clear();
