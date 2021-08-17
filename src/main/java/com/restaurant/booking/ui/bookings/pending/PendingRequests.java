@@ -6,13 +6,14 @@ import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "pending_requests", layout = MainLayout.class)
-public class PendingRequests extends HorizontalLayout {
+public class PendingRequests extends VerticalLayout {
 
     private Grid<BookingRequest> grid = new Grid<>(BookingRequest.class);
     private Button acceptButton = new Button("Accept");
@@ -28,17 +29,24 @@ public class PendingRequests extends HorizontalLayout {
         addClassName("pending-requests");
         setSizeFull();
 
+        H3 header = new H3("Pending booking requests");
+
         configureGrid();
         configureButtons();
 
         VerticalLayout buttons = new VerticalLayout(acceptButton, denyButton);
-        buttons.addClassName("accept-deny-buttons");
-        add(grid, buttons);
+        buttons.addClassName("button-layout");
+
+        Div content = new Div(grid, buttons);
+        content.setSizeFull();
+        content.addClassName("content");
+
+        add(header, content);
         updateList();
     }
 
     private void configureGrid() {
-        grid.addClassName("booking-grid");
+        grid.addClassName("pending-grid");
         grid.setSizeFull();
         grid.setColumns("id", "firstName",
                 "lastName", "email", "numOfPeople", "table", "bookingTime", "status");
