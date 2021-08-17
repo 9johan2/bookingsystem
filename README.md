@@ -23,5 +23,3 @@ Nice to have
 * Database of restaurant available tables and how many people can be located at
 every table
 * Don’t allow to create new booking of already taken table in specified time
-* When creating new booking request on webpage only allow to create request with 
-not already taken table at specified tim
