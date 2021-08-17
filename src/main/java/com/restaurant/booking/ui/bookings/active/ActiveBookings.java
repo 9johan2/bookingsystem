@@ -4,6 +4,7 @@ import com.restaurant.booking.backend.controller.BookingRequestController;
 import com.restaurant.booking.backend.model.BookingRequest;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,11 @@ public class ActiveBookings extends VerticalLayout {
     @Autowired
     public ActiveBookings(BookingRequestController bookingRequestController) {
         this.bookingRequestController = bookingRequestController;
+        H3 header = new H3("Active bookings");
 
         setSizeFull();
         configureGrid();
-        add(grid);
+        add(header, grid);
         updateList();
     }
 
