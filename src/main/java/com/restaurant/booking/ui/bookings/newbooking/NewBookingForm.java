@@ -11,8 +11,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
@@ -20,7 +19,7 @@ import com.vaadin.flow.shared.Registration;
 import java.util.List;
 
 
-public class NewBookingForm extends FormLayout {
+public class NewBookingForm extends VerticalLayout {
     private BookingRequest bookingRequest;
 
     TextField firstName = new TextField("First name");
@@ -32,40 +31,59 @@ public class NewBookingForm extends FormLayout {
 
     Button send = new Button("Send booking request");
 
-    // FIXME: 2021-08-11 There are probably better classes than these ones to display plain text...
-    H1 statusText = new H1();
-    H2 textarea = new H2();
-
 
     public NewBookingForm(TableController tableController) {
         addClassName("booking-form");
 
-        numOfPeople.setHasControls(true);
-        configureTables(tableController);
+        FormLayout fields = new FormLayout();
+        fields.add(firstName,
+                lastName,
+                email,
+                numOfPeople,
+                bookingTime,
+                table);
+
+//        configureFields();
+        configureTableSelection(tableController);
         configureButtons();
 
-        add(firstName,
-            lastName,
-            email,
-            numOfPeople,
-            bookingTime,
-            table,
-            send,
-            statusText,
-            textarea
-        );
 
+
+        add(configureFields(), send);
+
+
+
+    }
+
+    private FormLayout configureFields() {
+        FormLayout fields = new FormLayout();
+        fields.setResponsiveSteps(new FormLayout.ResponsiveStep("1em", 1),
+                new FormLayout.ResponsiveStep("15em", 2));
+
+        firstName.setMaxWidth("35%");
+        lastName.setMaxWidth("35%");
+        email.setMaxWidth("35%");
+        numOfPeople.setMaxWidth("35%");
+        numOfPeople.setHasControls(true);
+        bookingTime.setMaxWidth("35%");
+        bookingTime.setMinWidth("250px");
+        table.setMaxWidth("35%");
+
+        fields.add(firstName, lastName, email, numOfPeople, bookingTime, table);
+        return fields;
     }
 
     private void configureButtons() {
         send.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        send.setMaxWidth("200px");
+        send.getElement().setAttribute("colspan", "2");
         send.addClickShortcut(Key.ENTER);
 
         send.addClickListener(event -> validateAndSave());
 
     }
 
-    private void configureTables(TableController tableController) {
+    private void configureTableSelection(TableController tableController) {
         table.setItems(List.of());
 
         bookingTime.addValueChangeListener(listener -> {
@@ -95,8 +113,7 @@ public class NewBookingForm extends FormLayout {
             fireEvent(new SaveEvent(this, bookingRequest));
 
             clearAllFields();
-            statusText.setText("Thank you for your booking!");
-            textarea.setText("Your booking has been sent for approval.\nTo check the status of your booking use this booking reference: " + request.getId());
+
 
         } catch (Exception e) {
             e.printStackTrace();

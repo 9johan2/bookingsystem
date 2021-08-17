@@ -3,6 +3,7 @@ package com.restaurant.booking.ui.bookings.statuscheck;
 import com.restaurant.booking.backend.controller.BookingRequestController;
 import com.restaurant.booking.backend.model.BookingRequest;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
@@ -13,11 +14,12 @@ public class CheckBookingForm extends VerticalLayout {
 
     private final TextField bookingId = new TextField("Booking reference");
     private final Button send = new Button("Send");
-    private final TextField result = new TextField("Booking status");
+    private final Label result = new Label();
 
     public CheckBookingForm(BookingRequestController bookingRequestController) {
         send.setEnabled(false);
-        result.setEnabled(false);
+        bookingId.setWidth("350px");
+
         result.setWidthFull();
 
         bookingId.addValueChangeListener(event -> send.setEnabled(!bookingId.isEmpty()));
@@ -25,19 +27,19 @@ public class CheckBookingForm extends VerticalLayout {
         send.addClickListener(buttonClickEvent -> {
             Optional<BookingRequest> booking = bookingRequestController.getBookingById(bookingId.getValue());
             if (booking.isEmpty()) {
-                result.setValue("Booking id does not match any booking");
+                result.setText("Booking id does not match any booking");
             } else {
                 BookingRequest.Status status = booking.get().getStatus();
 
                 switch (status) {
                     case APPROVED:
-                        result.setValue("Your booking has been approved");
+                        result.setText("Your booking has been approved");
                         break;
                     case DENIED:
-                        result.setValue("Your booking has been denied, please contact customer support for further info");
+                        result.setText("Your booking has been denied, please contact customer support for further info");
                         break;
                     default:
-                        result.setValue("Your booking request is still being processed");
+                        result.setText("Your booking request is still being processed");
                 }
             }
         });

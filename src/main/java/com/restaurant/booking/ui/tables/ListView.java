@@ -4,6 +4,7 @@ import com.restaurant.booking.backend.controller.TableController;
 import com.restaurant.booking.backend.model.Table;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,9 @@ public class ListView extends VerticalLayout {
         addClassName("list-view");
         setSizeFull();
         configureGrid();
-        add(tableGrid);
+
+        H3 header = new H3("All tables");
+        add(header, tableGrid);
 
         tableGrid.setItems(tableController.getTables(null, null));
     }
