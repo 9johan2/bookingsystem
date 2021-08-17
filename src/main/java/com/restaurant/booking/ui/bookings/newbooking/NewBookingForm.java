@@ -91,7 +91,6 @@ public class NewBookingForm extends VerticalLayout {
 
         //Validation
             // First name
-        firstName.setRequiredIndicatorVisible(true);
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
                         "Please enter your first name", 1, null))
