@@ -9,7 +9,6 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.Optional;
 
-// FIXME: 2021-08-10 The UI should be redesigned to display information in a nicer way
 public class CheckBookingForm extends VerticalLayout {
 
     private final TextField bookingId = new TextField("Booking reference");
