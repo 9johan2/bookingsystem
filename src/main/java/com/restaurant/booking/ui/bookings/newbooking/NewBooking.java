@@ -10,7 +10,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Route(value = "", layout = MainLayout.class)
 public class NewBooking extends VerticalLayout {
 
@@ -45,7 +44,7 @@ public class NewBooking extends VerticalLayout {
         bookingRequestController.save(event.getBookingRequest());
         tableController.save(event.getTable());
         dialog.add(new Text("Thank you for your booking!\nYour booking has been sent for approval.\nTo check the status of your booking please use this booking reference: \n" + event.getBookingRequest().getId()));
-        form.clearAllFields();
         dialog.open();
+//        form.clearAllFields();
     }
 }
