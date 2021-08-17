@@ -14,8 +14,16 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.validator.DateTimeRangeValidator;
+import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.data.validator.IntegerRangeValidator;
+import com.vaadin.flow.data.validator.StringLengthValidator;
+import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -28,6 +36,7 @@ public class NewBookingForm extends VerticalLayout {
     IntegerField numOfPeople = new IntegerField("Number of people");
     ComboBox<Table> table = new ComboBox<>("Table");
     DateTimePicker bookingTime = new DateTimePicker("Time of visit");
+    Binder<BookingRequest> binder = new Binder<>();
 
     Button send = new Button("Send booking request");
 
@@ -35,24 +44,10 @@ public class NewBookingForm extends VerticalLayout {
     public NewBookingForm(TableController tableController) {
         addClassName("booking-form");
 
-        FormLayout fields = new FormLayout();
-        fields.add(firstName,
-                lastName,
-                email,
-                numOfPeople,
-                bookingTime,
-                table);
-
-//        configureFields();
         configureTableSelection(tableController);
         configureButtons();
 
-
-
         add(configureFields(), send);
-
-
-
     }
 
     private FormLayout configureFields() {
@@ -60,16 +55,79 @@ public class NewBookingForm extends VerticalLayout {
         fields.setResponsiveSteps(new FormLayout.ResponsiveStep("1em", 1),
                 new FormLayout.ResponsiveStep("15em", 2));
 
+        bookingRequest = new BookingRequest();
+
+        // Size layout and value change mode
         firstName.setMaxWidth("35%");
+        firstName.setMinWidth("100px");
+        firstName.getStyle().set("marginRight", "10px");
+        firstName.setValueChangeMode(ValueChangeMode.EAGER);
+
         lastName.setMaxWidth("35%");
+        lastName.setMinWidth("100px");
+        lastName.getStyle().set("marginRight", "10px");
+        lastName.setValueChangeMode(ValueChangeMode.EAGER);
+
         email.setMaxWidth("35%");
+        email.setMinWidth("100px");
+        email.getStyle().set("marginRight", "10px");
+        email.setValueChangeMode(ValueChangeMode.EAGER);
+
         numOfPeople.setMaxWidth("35%");
+        numOfPeople.setMinWidth("100px");
+        numOfPeople.getStyle().set("marginRight", "10px");
         numOfPeople.setHasControls(true);
+        numOfPeople.setValueChangeMode(ValueChangeMode.EAGER);
+
         bookingTime.setMaxWidth("35%");
         bookingTime.setMinWidth("250px");
+        bookingTime.getStyle().set("marginRight", "10px");
+
         table.setMaxWidth("35%");
+        table.setMinWidth("250px");
 
         fields.add(firstName, lastName, email, numOfPeople, bookingTime, table);
+
+        //Validation
+        firstName.setRequiredIndicatorVisible(true);
+        binder.forField(firstName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter your first name", 1, null))
+                .bind(BookingRequest::getFirstName, BookingRequest::setFirstName);
+
+        lastName.setRequiredIndicatorVisible(true);
+        binder.forField(lastName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter your family name", 1, null))
+                .bind(BookingRequest::getLastName, BookingRequest::setLastName);
+
+        email.setRequiredIndicatorVisible(true);
+        binder.forField(email)
+                .withValidator(new StringLengthValidator(
+                        "Please enter your email", 1, null))
+                .withValidator(new EmailValidator("Incorrect email adress"))
+                .bind(BookingRequest::getEmail, BookingRequest::setEmail);
+
+        numOfPeople.setRequiredIndicatorVisible(true);
+        binder.forField(numOfPeople)
+                .withValidator(new IntegerRangeValidator("There must be at least one person included in your booking"
+                        , 1, null))
+                .bind(BookingRequest::getNumOfPeople, BookingRequest::setNumOfPeople);
+
+        bookingTime.setRequiredIndicatorVisible(true);
+        binder.forField(bookingTime)
+                .withValidator(new DateTimeRangeValidator(
+                        "Please chose the desired date for your visit"
+                        , LocalDateTime.now(), LocalDateTime.now().plusYears(1)))
+                .bind(BookingRequest::getBookingTime, BookingRequest::setBookingTime);
+
+        SerializablePredicate<Table> tableSelected = value -> table.getValue() != null;
+        table.setRequiredIndicatorVisible(true);
+        binder.forField(table)
+                .withNullRepresentation(null)
+                .withValidator(tableSelected, "Please choose a table. If no tables are visible there are no free tables matching your desired date and group size")
+                .bind(BookingRequest::getTable, BookingRequest::setTable);
+
         return fields;
     }
 
@@ -78,6 +136,8 @@ public class NewBookingForm extends VerticalLayout {
         send.setMaxWidth("200px");
         send.getElement().setAttribute("colspan", "2");
         send.addClickShortcut(Key.ENTER);
+
+        binder.addStatusChangeListener(e -> send.setEnabled(binder.isValid()));
 
         send.addClickListener(event -> validateAndSave());
 
@@ -100,20 +160,9 @@ public class NewBookingForm extends VerticalLayout {
 
     private void validateAndSave() {
         try {
-            BookingRequest request = new BookingRequest(
-                    firstName.getValue(),
-                    lastName.getValue(),
-                    email.getValue(),
-                    numOfPeople.getValue(),
-                    table.getValue(),
-                    bookingTime.getValue()
-            );
-
-            setBookingRequest(request);
+            binder.writeBeanIfValid(bookingRequest);
             fireEvent(new SaveEvent(this, bookingRequest));
-
             clearAllFields();
-
 
         } catch (Exception e) {
             e.printStackTrace();
