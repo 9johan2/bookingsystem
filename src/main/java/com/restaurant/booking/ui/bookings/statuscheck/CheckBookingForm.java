@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 
 import java.util.Optional;
 
@@ -16,13 +17,13 @@ public class CheckBookingForm extends VerticalLayout {
     private final Label result = new Label();
 
     public CheckBookingForm(BookingRequestController bookingRequestController) {
-        send.setEnabled(false);
         bookingId.setWidth("350px");
+        bookingId.setValueChangeMode(ValueChangeMode.EAGER);
+        bookingId.addValueChangeListener(event -> send.setEnabled(!bookingId.isEmpty()));
 
         result.setWidthFull();
 
-        bookingId.addValueChangeListener(event -> send.setEnabled(!bookingId.isEmpty()));
-
+        send.setEnabled(false);
         send.addClickListener(buttonClickEvent -> {
             Optional<BookingRequest> booking = bookingRequestController.getBookingById(bookingId.getValue());
             if (booking.isEmpty()) {
