@@ -168,30 +168,20 @@ public class NewBookingForm extends VerticalLayout {
         });
     }
 
-private void validateAndSave() {
+    private void validateAndSave() {
         try {
             bookingRequest = new BookingRequest();
             binder.writeBeanIfValid(bookingRequest);
-            
+
             //Adds the booked time to the tables list of bookings to prevent the same table being booked
             //twice at the same time.
             bookingRequest.getTable().getBookings().add(bookingRequest.getBookingTime());
-            
+
             fireEvent(new SaveEvent(this, bookingRequest));
-            clearAllFields();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void clearAllFields() {
-        firstName.clear();
-        lastName.clear();
-        email.clear();
-        numOfPeople.clear();
-        bookingTime.clear();
-        table.clear();
     }
 
     public void setBookingRequest(BookingRequest bookingRequest) {
