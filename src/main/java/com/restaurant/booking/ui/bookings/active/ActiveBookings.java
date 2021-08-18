@@ -1,6 +1,7 @@
 package com.restaurant.booking.ui.bookings.active;
 
 import com.restaurant.booking.backend.controller.BookingRequestController;
+import com.restaurant.booking.backend.controller.TableController;
 import com.restaurant.booking.backend.model.BookingRequest;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -13,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ActiveBookings extends VerticalLayout {
 
     private final BookingRequestController bookingRequestController;
+    private final TableController tableController;
 
     private final Grid<BookingRequest> grid = new Grid<>(BookingRequest.class);
 
     @Autowired
-    public ActiveBookings(BookingRequestController bookingRequestController) {
+    public ActiveBookings(BookingRequestController bookingRequestController,
+                          TableController tableController) {
         this.bookingRequestController = bookingRequestController;
+        this.tableController = tableController;
         H3 header = new H3("Active bookings");
 
         setSizeFull();
@@ -38,6 +42,7 @@ public class ActiveBookings extends VerticalLayout {
 
     private void updateList() {
         grid.setItems(bookingRequestController.getBooking(BookingRequest.Status.APPROVED));
+        tableController.clearOldBookings();
     }
 
 }
