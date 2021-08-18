@@ -63,6 +63,15 @@ public class TableService{
         save(table);
     }
 
+        // A method for clearing out old bookings from the tables list.
+        // This will NOT affect the old booking requests.
+    public void clearOldBookings() {
+        for (Table table: getTables()) {
+            table.getBookings().removeIf(bookingTime -> bookingTime.isBefore(LocalDateTime.now()));
+            save(table);
+        }
+    }
+
     @PostConstruct
     public void addTestData() {
         if (tableRepository.count() == 0) {
