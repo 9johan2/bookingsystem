@@ -168,11 +168,15 @@ public class NewBookingForm extends VerticalLayout {
         });
     }
 
-    private void validateAndSave() {
+private void validateAndSave() {
         try {
             bookingRequest = new BookingRequest();
             binder.writeBeanIfValid(bookingRequest);
+            
+            //Adds the booked time to the tables list of bookings to prevent the same table being booked
+            //twice at the same time.
             bookingRequest.getTable().getBookings().add(bookingRequest.getBookingTime());
+            
             fireEvent(new SaveEvent(this, bookingRequest));
             clearAllFields();
 
