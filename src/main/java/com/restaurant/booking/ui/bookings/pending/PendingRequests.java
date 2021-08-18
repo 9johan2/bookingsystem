@@ -1,6 +1,7 @@
 package com.restaurant.booking.ui.bookings.pending;
 
 import com.restaurant.booking.backend.controller.BookingRequestController;
+import com.restaurant.booking.backend.controller.TableController;
 import com.restaurant.booking.backend.model.BookingRequest;
 import com.restaurant.booking.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -20,11 +21,14 @@ public class PendingRequests extends VerticalLayout {
     private Button denyButton = new Button("Deny");
 
     private final BookingRequestController bookingRequestController;
+    private final TableController tableController;
     private BookingRequest bookingRequest;
 
     @Autowired
-    public PendingRequests(BookingRequestController bookingRequestController) {
+    public PendingRequests(BookingRequestController bookingRequestController,
+                           TableController tableController) {
         this.bookingRequestController = bookingRequestController;
+        this.tableController = tableController;
 
         addClassName("pending-requests");
         setSizeFull();
@@ -74,6 +78,7 @@ public class PendingRequests extends VerticalLayout {
         denyButton.addClickListener(e -> {
             bookingRequest.setStatus(BookingRequest.Status.DENIED);
             bookingRequestController.update(bookingRequest);
+            tableController.removeBooking(bookingRequest.getTable(), bookingRequest.getBookingTime());
             updateList();
         });
     }
