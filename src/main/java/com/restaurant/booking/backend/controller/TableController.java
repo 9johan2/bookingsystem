@@ -52,4 +52,9 @@ public class TableController {
             tableService.removeBooking(table, bookingTime);
         }
     }
+
+    @PutMapping("clear-old-bookings")
+    public void clearOldBookings() {
+        tableService.clearOldBookings();
+    }
 }
