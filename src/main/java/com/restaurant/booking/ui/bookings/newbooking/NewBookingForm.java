@@ -23,7 +23,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -80,6 +82,9 @@ public class NewBookingForm extends VerticalLayout {
         bookingTime.setMaxWidth("35%");
         bookingTime.setMinWidth("250px");
         bookingTime.getStyle().set("marginRight", "10px");
+        LocalDateTime min = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        bookingTime.setMin(min);
+
 
         table.setMaxWidth("35%");
         table.setMinWidth("250px");
@@ -118,8 +123,8 @@ public class NewBookingForm extends VerticalLayout {
             //Booking time
         binder.forField(bookingTime)
                 .withValidator(new DateTimeRangeValidator(
-                        "Please chose the desired date for your visit"
-                        , LocalDateTime.now(), LocalDateTime.now().plusYears(1)))
+                        "Please chose a valid date and time for your visit"
+                        , LocalDateTime.now(), null))
                 .bind(BookingRequest::getBookingTime, BookingRequest::setBookingTime);
 
             //Table
