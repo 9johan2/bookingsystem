@@ -50,6 +50,12 @@ public class TableService{
         }
     }
 
+        // Adds a successful booking time to the list of booking for the table.
+    public void addBooking(Table table, LocalDateTime bookingTime) {
+        table.getBookings().add(bookingTime);
+        save(table);
+    }
+
         // If a BookingRequest has been denied then this method will be called to clear
         // the list of bookings from the table.
     public void removeBooking(Table table, LocalDateTime bookingTime) {
@@ -66,7 +72,6 @@ public class TableService{
                     new Table(3, 4),
                     new Table(4, 6)
             ));
-
         }
     }
 }

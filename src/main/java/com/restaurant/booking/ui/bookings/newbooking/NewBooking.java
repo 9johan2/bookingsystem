@@ -68,10 +68,10 @@ public class NewBooking extends VerticalLayout {
 
     private void saveBooking(NewBookingForm.SaveEvent event) {
         bookingRequestController.save(event.getBookingRequest());
-        tableController.save(event.getTable());
+        tableController.addBooking(event.getTable(), event.getBookingRequest().getBookingTime());
 
         bookingId.setText(event.getBookingRequest().getId());
-        
+
         dialog.open();
     }
 }

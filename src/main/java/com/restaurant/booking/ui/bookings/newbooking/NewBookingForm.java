@@ -55,7 +55,6 @@ public class NewBookingForm extends VerticalLayout {
         fields.setResponsiveSteps(new FormLayout.ResponsiveStep("1em", 1),
                 new FormLayout.ResponsiveStep("15em", 2));
 
-
         // Size layout and value change mode
         firstName.setMaxWidth("35%");
         firstName.setMinWidth("100px");
@@ -85,7 +84,6 @@ public class NewBookingForm extends VerticalLayout {
         table.setMaxWidth("35%");
         table.setMinWidth("250px");
         table.setReadOnly(true);
-
 
         fields.add(firstName, lastName, email, numOfPeople, bookingTime, table);
 
@@ -172,10 +170,6 @@ public class NewBookingForm extends VerticalLayout {
         try {
             bookingRequest = new BookingRequest();
             binder.writeBeanIfValid(bookingRequest);
-
-            //Adds the booked time to the tables list of bookings to prevent the same table being booked
-            //twice at the same time.
-            bookingRequest.getTable().getBookings().add(bookingRequest.getBookingTime());
 
             fireEvent(new SaveEvent(this, bookingRequest));
 
