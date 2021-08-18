@@ -48,7 +48,7 @@ public class NewBooking extends VerticalLayout {
         this.bookingId = new Text("");
 
         dialog.setWidth("550px");
-        dialog.setHeight("250px");
+        dialog.setHeight("300px");
         dialog.setCloseOnOutsideClick(false);
 
         Button closeButton = new Button("Close", e -> {
