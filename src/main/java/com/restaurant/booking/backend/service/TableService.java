@@ -50,6 +50,13 @@ public class TableService{
         }
     }
 
+        // If a BookingRequest has been denied then this method will be called to clear
+        // the list of bookings from the table.
+    public void removeBooking(Table table, LocalDateTime bookingTime) {
+        table.getBookings().removeIf(bookingTime::equals);
+        save(table);
+    }
+
     @PostConstruct
     public void addTestData() {
         if (tableRepository.count() == 0) {
