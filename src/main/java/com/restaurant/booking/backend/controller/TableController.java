@@ -36,4 +36,12 @@ public class TableController {
             tableService.save(table);
         }
     }
+
+    @PutMapping("remove-booking")
+    public void removeBooking(@RequestParam("table") Table table,
+                              @RequestParam("bookingTime") LocalDateTime bookingTime) {
+        if (table != null && bookingTime != null) {
+            tableService.removeBooking(table, bookingTime);
+        }
+    }
 }
